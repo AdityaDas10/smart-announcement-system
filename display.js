@@ -86,22 +86,33 @@ track.innerHTML = items.map(item=>`     <div class="carousel-slide">       <div 
 }
 
 // ── FIREBASE ─────────────────────────────────────────────
-db.ref('announcements').on('value', snap=>{
-const data = snap.val();
-const items = data ? Object.values(data).sort((a,b)=>b.timestamp-a.timestamp):[];
+db.ref('announcements').on('value', snap => {
+  const data = snap.val();
 
-if(!isFirstLoad){
-items.forEach(item=>{
-if(!knownKeys.has(item.text)){
+  const items = data
+    ? Object.entries(data)
+        .map(([key, val]) => ({ key, ...val }))
+        .sort((a, b) => b.timestamp - a.timestamp)
+    : [];
 
-```
-    // 🔥 SMART FEATURES TRIGGER
-    lastUpdateTime = Date.now();
-    setActiveMode();
-    wakeEffect();
+  if (!isFirstLoad) {
+    items.forEach(item => {
+      if (!knownKeys.has(item.key)) {
 
-    speakAnnouncement(item.text);
+        lastUpdateTime = Date.now();
+        setActiveMode();
+        wakeEffect();
+
+        speakAnnouncement(item.text);
+        currentIndex = 0;
+      }
+    });
   }
+
+  items.forEach(item => knownKeys.add(item.key));
+
+  buildSlides(items);
+  isFirstLoad = false;
 });
 ```
 
