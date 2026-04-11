@@ -1,0 +1,298 @@
+/* admin.css — Smart Campus Admin Panel */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #0f1117;
+  color: #e8edf5;
+  font-family: 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  padding: 0 0 40px;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── HEADER ───────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.header-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.header-sub {
+  font-size: 13px;
+  color: #5a6680;
+  margin-top: 3px;
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #444;
+  transition: background 0.3s;
+}
+.status-dot.connected    { background: #00d4a0; box-shadow: 0 0 8px #00d4a0; }
+.status-dot.disconnected { background: #ff4d4d; }
+
+/* ── CARD ─────────────────────────────────────────────── */
+.card {
+  background: #1a1f2e;
+  border: 0.5px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #a0aec0;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.count-badge {
+  background: rgba(0,212,160,0.15);
+  color: #00d4a0;
+  border: 1px solid rgba(0,212,160,0.3);
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 10px;
+}
+
+/* ── TEXTAREA ─────────────────────────────────────────── */
+.ann-textarea {
+  width: 100%;
+  background: #0f1117;
+  border: 0.5px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 15px;
+  font-family: 'Segoe UI', sans-serif;
+  color: #e8edf5;
+  outline: none;
+  resize: vertical;
+  line-height: 1.5;
+  transition: border-color 0.2s;
+}
+
+.ann-textarea:focus {
+  border-color: rgba(0,212,160,0.5);
+}
+
+.ann-textarea::placeholder { color: #3a4255; }
+
+/* ── INPUT FOOTER ─────────────────────────────────────── */
+.input-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.author-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #5a6680;
+}
+
+.author-input {
+  background: #0f1117;
+  border: 0.5px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 13px;
+  color: #e8edf5;
+  outline: none;
+  width: 120px;
+}
+
+.author-input:focus { border-color: rgba(0,212,160,0.4); }
+
+.char-count {
+  font-size: 11px;
+  color: #3a4255;
+  white-space: nowrap;
+}
+
+/* ── POST BUTTON ──────────────────────────────────────── */
+.post-btn {
+  width: 100%;
+  background: #00d4a0;
+  color: #0a0e14;
+  border: none;
+  border-radius: 10px;
+  padding: 13px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Segoe UI', sans-serif;
+  letter-spacing: 0.04em;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.post-btn:hover  { background: #00b888; }
+.post-btn:active { transform: scale(0.98); }
+
+.post-feedback {
+  font-size: 13px;
+  text-align: center;
+  min-height: 18px;
+  color: #00d4a0;
+}
+
+/* ── ANNOUNCEMENT LIST ────────────────────────────────── */
+.ann-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 55vh;
+  overflow-y: auto;
+}
+
+.ann-list::-webkit-scrollbar { width: 4px; }
+.ann-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+.ann-item {
+  background: #0f1117;
+  border: 0.5px solid rgba(255,255,255,0.07);
+  border-left: 3px solid #00d4a0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+
+.ann-item-text {
+  font-size: 15px;
+  color: #e8edf5;
+  line-height: 1.5;
+}
+
+.ann-item-meta {
+  font-size: 11px;
+  color: #3a4255;
+}
+
+.ann-item-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.btn-edit, .btn-delete {
+  font-size: 12px;
+  padding: 5px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: 600;
+  border: none;
+  transition: opacity 0.15s;
+}
+
+.btn-edit   { background: rgba(0,153,255,0.15); color: #0099ff; border: 1px solid rgba(0,153,255,0.3); }
+.btn-delete { background: rgba(255,77,77,0.15);  color: #ff4d4d; border: 1px solid rgba(255,77,77,0.3); }
+.btn-edit:hover   { opacity: 0.8; }
+.btn-delete:hover { opacity: 0.8; }
+
+.empty-msg {
+  text-align: center;
+  color: #3a4255;
+  font-size: 14px;
+  padding: 20px 0;
+}
+
+/* ── MODAL ────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.modal-overlay.hidden { display: none; }
+
+.modal {
+  background: #1a1f2e;
+  border: 0.5px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  padding: 20px;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modal-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.modal-btns {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.btn-cancel {
+  background: rgba(255,255,255,0.06);
+  color: #a0aec0;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-save {
+  background: #00d4a0;
+  color: #0a0e14;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+}

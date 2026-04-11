@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel — Smart Campus</title>
+  <link rel="stylesheet" href="admin.css"/>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+      <div>
+        <div class="header-title">📢 Admin Panel</div>
+        <div class="header-sub">Smart Campus Announcement System</div>
+      </div>
+      <div class="status-dot" id="status-dot" title="Firebase connection"></div>
+    </div>
+
+    <!-- POST NEW ANNOUNCEMENT -->
+    <div class="card">
+      <div class="card-title">New Announcement</div>
+      <textarea
+        id="ann-input"
+        class="ann-textarea"
+        placeholder="Type your announcement here..."
+        maxlength="300"
+        rows="3"
+      ></textarea>
+      <div class="input-footer">
+        <div class="author-row">
+          <label>Posted by:</label>
+          <input id="author-input" class="author-input" placeholder="Admin" maxlength="30"/>
+        </div>
+        <div class="char-count" id="char-count">0 / 300</div>
+      </div>
+      <button class="post-btn" onclick="postAnnouncement()">Post Announcement</button>
+      <div class="post-feedback" id="post-feedback"></div>
+    </div>
+
+    <!-- ANNOUNCEMENTS LIST -->
+    <div class="card">
+      <div class="card-title-row">
+        <div class="card-title">All Announcements</div>
+        <span class="count-badge" id="ann-count">0</span>
+      </div>
+      <div id="ann-list" class="ann-list">
+        <div class="empty-msg">No announcements yet</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="modal-overlay hidden" id="modal">
+    <div class="modal">
+      <div class="modal-title">Edit Announcement</div>
+      <textarea id="edit-input" class="ann-textarea" rows="4"></textarea>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-save"   onclick="saveEdit()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
