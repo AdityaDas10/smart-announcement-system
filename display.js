@@ -1,4 +1,4 @@
-// display.js — Smart Campus Display Panel (FINAL + SMART FEATURES)
+// display.js — Smart Campus Display Panel (FINAL + FIXED + SMART)
 
 // ── Firebase ──────────────────────────────────────────────
 firebase.initializeApp(firebaseConfig);
@@ -33,127 +33,135 @@ document.body.classList.add("wake");
 setTimeout(() => document.body.classList.remove("wake"), 600);
 }
 
+// Idle check
 setInterval(() => {
 if (Date.now() - lastUpdateTime > 30000) {
 setIdleMode();
 }
 }, 10000);
 
-// ── Carousel state ────────────────────────────────────────
-let slides = [];
+// ── STATE ────────────────────────────────────────────────
 let currentIndex = 0;
-let autoTimer = null;
 let knownKeys = new Set();
 let isFirstLoad = true;
-
-const AUTO_DELAY = 5000;
 
 // ── CLOCK ────────────────────────────────────────────────
 function updateClock() {
 const now = new Date();
 document.getElementById('time').innerText =
-now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+now.toLocaleTimeString('en-IN', {
+hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false
+});
 document.getElementById('date').innerText = now.toDateString();
 }
 updateClock();
-setInterval(updateClock,1000);
+setInterval(updateClock, 1000);
 
 // ── WEATHER ──────────────────────────────────────────────
 async function getWeather() {
 try {
-const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${OWM_CITY}&appid=${OWM_API_KEY}&units=metric`);
+const res = await fetch(
+`https://api.openweathermap.org/data/2.5/weather?q=${OWM_CITY}&appid=${OWM_API_KEY}&units=metric`
+);
 const data = await res.json();
+
+```
 document.getElementById('weather').innerText =
-`${Math.round(data.main.temp)}°C · ${data.weather[0].description}`;
+  `${Math.round(data.main.temp)}°C · ${data.weather[0].description}`;
+```
+
 } catch {
 document.getElementById('weather').innerText = 'Weather unavailable';
 }
 }
 getWeather();
-setInterval(getWeather,600000);
+setInterval(getWeather, 600000);
 
 // ── CAROUSEL ─────────────────────────────────────────────
-function buildSlides(items){
+function buildSlides(items) {
 const track = document.getElementById('carousel-track');
 
-if(items.length===0){
-track.innerHTML='<div class="empty-slide">No announcements</div>';
+if (items.length === 0) {
+track.innerHTML = '<div class="empty-slide">No announcements</div>';
 return;
 }
 
-track.innerHTML = items.map(item=>`     <div class="carousel-slide">       <div class="slide-text">${item.text}</div>       <div class="slide-meta">By ${item.author||'Admin'}</div>     </div>
+track.innerHTML = items.map(item => `     <div class="carousel-slide">       <div class="slide-text">${item.text}</div>       <div class="slide-meta">By ${item.author || 'Admin'}</div>     </div>
   `).join('');
 }
 
 // ── FIREBASE ─────────────────────────────────────────────
 db.ref('announcements').on('value', snap => {
-  const data = snap.val();
+const data = snap.val();
 
-  const items = data
-    ? Object.entries(data)
-        .map(([key, val]) => ({ key, ...val }))
-        .sort((a, b) => b.timestamp - a.timestamp)
-    : [];
+const items = data
+? Object.entries(data)
+.map(([key, val]) => ({ key, ...val }))
+.sort((a, b) => b.timestamp - a.timestamp)
+: [];
 
-  if (!isFirstLoad) {
-    items.forEach(item => {
-      if (!knownKeys.has(item.key)) {
+if (!isFirstLoad) {
+items.forEach(item => {
+if (!knownKeys.has(item.key)) {
 
-        lastUpdateTime = Date.now();
-        setActiveMode();
-        wakeEffect();
+```
+    // Smart behavior
+    lastUpdateTime = Date.now();
+    setActiveMode();
+    wakeEffect();
 
-        speakAnnouncement(item.text);
-        currentIndex = 0;
-      }
-    });
+    speakAnnouncement(item.text);
+    currentIndex = 0;
   }
-
-  items.forEach(item => knownKeys.add(item.key));
-
-  buildSlides(items);
-  isFirstLoad = false;
 });
 ```
 
 }
 
-items.forEach(item=>knownKeys.add(item.text));
+items.forEach(item => knownKeys.add(item.key));
+
 buildSlides(items);
-isFirstLoad=false;
+isFirstLoad = false;
 });
 
 // ── VOICE ────────────────────────────────────────────────
-function speakAnnouncement(text){
-if(!voiceEnabled) return;
+function speakAnnouncement(text) {
+if (!voiceEnabled) return;
 
-const indicator=document.getElementById('voice-indicator');
+const indicator = document.getElementById('voice-indicator');
 indicator.classList.remove('hidden');
 
-const utter=new SpeechSynthesisUtterance("New announcement: "+text);
-utter.rate=0.85;
-utter.lang="en-IN";
+const utter = new SpeechSynthesisUtterance("New announcement: " + text);
+utter.rate = 0.85;
+utter.lang = "en-IN";
 
-utter.onend=()=>indicator.classList.add('hidden');
+utter.onend = () => indicator.classList.add('hidden');
 
 speechSynthesis.cancel();
 speechSynthesis.speak(utter);
 }
 
 // ── SENSORS ──────────────────────────────────────────────
-async function fetchSensorData(){
-try{
-const res=await fetch(`https://api.thingspeak.com/channels/${TS_CHANNEL_ID}/feeds.json?api_key=${TS_READ_KEY}&results=1`);
-const data=await res.json();
-const f=data.feeds[0];
+async function fetchSensorData() {
+try {
+const res = await fetch(
+`https://api.thingspeak.com/channels/${TS_CHANNEL_ID}/feeds.json?api_key=${TS_READ_KEY}&results=1`
+);
+const data = await res.json();
 
 ```
-document.getElementById('temp').innerText=f.field1||'--';
-document.getElementById('hum').innerText=f.field2||'--';
-document.getElementById('air').innerText=f.field3||'--';
+if (!data.feeds || data.feeds.length === 0) return;
+
+const f = data.feeds[0];
+
+document.getElementById('temp').innerText = f.field1 || '--';
+document.getElementById('hum').innerText  = f.field2 || '--';
+document.getElementById('air').innerText  = f.field3 || '--';
 ```
 
-}catch(e){console.log(e);}
+} catch (e) {
+console.log("Sensor error:", e);
+}
 }
 fetchSensorData();
-setInterval(fetchSensorData,15000);
+setInterval(fetchSensorData, 15000);
