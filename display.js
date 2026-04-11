@@ -3,6 +3,12 @@
 // ── Firebase ──────────────────────────────────────────────
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+let voiceEnabled = false;
+let lastUpdateTime = Date.now();
+
+document.addEventListener('click', () => {
+  voiceEnabled = true;
+}, { once: true });
 
 // ── ThingSpeak ────────────────────────────────────────────
 const TS_CHANNEL_ID = "3332831";
@@ -21,6 +27,28 @@ let knownKeys      = new Set();
 let isFirstLoad    = true;
 
 const AUTO_DELAY   = 5000;      // 5 seconds per slide
+
+// ── SMART DISPLAY FUNCTIONS ───────────────────────────────
+
+function setIdleMode() {
+  document.body.style.filter = "brightness(0.5)";
+}
+
+function setActiveMode() {
+  document.body.style.filter = "brightness(1)";
+}
+
+function wakeEffect() {
+  document.body.classList.add("wake");
+  setTimeout(() => document.body.classList.remove("wake"), 600);
+}
+
+// idle checker
+setInterval(() => {
+  if (Date.now() - lastUpdateTime > 30000) {
+    setIdleMode();
+  }
+}, 10000);
 
 // ── Touch state ───────────────────────────────────────────
 let touchStartX  = 0;
@@ -239,6 +267,9 @@ db.ref('announcements').on('value', snap => {
   if (!isFirstLoad) {
     items.forEach(item => {
       if (!knownKeys.has(item.key)) {
+        lastUpdateTime = Date.now();
+        setActiveMode();
+        wakeEffect();
         speakAnnouncement(item.text);
         // Jump to the new slide (it'll be at index 0 since sorted newest first)
         currentIndex = 0;
