@@ -24,6 +24,9 @@ function changeGroup(group) {
 document.addEventListener("DOMContentLoaded", () => {
   const select = document.getElementById("group-select");
   if (select) select.value = DISPLAY_GROUP;
+
+  const label = document.getElementById("group-name");
+  if (label) label.innerText = DISPLAY_GROUP;
 });
 
 // ── ThingSpeak ────────────────────────────────────────────
