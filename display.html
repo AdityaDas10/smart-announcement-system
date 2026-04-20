@@ -25,16 +25,21 @@
   </div>
 
   <div class="topbar-right">
-    <div id="weather">Loading weather...</div>
+  <div id="weather">Loading weather...</div>
 
-    <!-- ✅ GROUP SELECT -->
-    <select id="group-select" class="group-select" onchange="changeGroup(this.value)">
-      <option value="ALL">All</option>
-      <option value="CSE">CSE</option>
-      <option value="ECE">ECE</option>
-      <option value="LAB">Lab</option>
-    </select>
+  <!-- ✅ GROUP LABEL -->
+  <div class="group-label">
+    Group: <span id="group-name"></span>
   </div>
+
+  <!-- ✅ GROUP SELECT -->
+  <select id="group-select" class="group-select" onchange="changeGroup(this.value)">
+    <option value="ALL">All</option>
+    <option value="CSE">CSE</option>
+    <option value="ECE">ECE</option>
+    <option value="LAB">Lab</option>
+  </select>
+</div>
 </div>
 
   <!-- ALERT BOX -->
