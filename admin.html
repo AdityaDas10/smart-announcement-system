@@ -34,6 +34,16 @@
           <label>Posted by:</label>
           <input id="author-input" class="author-input" placeholder="Admin" maxlength="30"/>
         </div>
+        <div class="author-row">
+      <label>Target:</label>
+      <select id="target-select" class="author-input">
+        <option value="ALL">All</option>
+        <option value="CSE">CSE</option>
+        <option value="ECE">ECE</option>
+        <option value="LAB">Lab</option>
+      </select>
+    </div>
+
         <div class="char-count" id="char-count">0 / 300</div>
       </div>
       <button class="post-btn" onclick="postAnnouncement()">Post Announcement</button>
