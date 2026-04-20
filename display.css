@@ -73,7 +73,11 @@ body::before {
   margin-top: 4px;
 }
 
-.topbar-right { text-align: right; }
+.topbar-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
 #weather { font-size: 18px; line-height: 1.6; }
 
 /* ── ALERT ────────────────────────────────────────────── */
