@@ -13,14 +13,14 @@ document.addEventListener('click', () => {
   voiceEnabled = true;
 }, { once: true });
 
-// ✅ Change group (from dropdown)
+// ✅ Change group
 function changeGroup(group) {
   DISPLAY_GROUP = group;
   localStorage.setItem("group", group);
   location.reload();
 }
 
-// ✅ Set dropdown value on load
+// ✅ Set dropdown + label
 document.addEventListener("DOMContentLoaded", () => {
   const select = document.getElementById("group-select");
   if (select) select.value = DISPLAY_GROUP;
@@ -38,11 +38,11 @@ const OWM_API_KEY = "5b146a579bcabefe2bf82ca22d301fd3";
 const OWM_CITY    = "Kozhikode,IN";
 
 // ── Carousel state ────────────────────────────────────────
-let slides         = [];
-let currentIndex   = 0;
-let autoTimer      = null;
-let knownKeys      = new Set();
-let isFirstLoad    = true;
+let slides = [];
+let currentIndex = 0;
+let autoTimer = null;
+let knownKeys = new Set();
+let isFirstLoad = true;
 
 const AUTO_DELAY = 5000;
 
@@ -93,6 +93,37 @@ getWeather();
 setInterval(getWeather,600000);
 
 // ═══════════════════════════════════════════════════════════
+// 🔥 TIMETABLE (NEW FEATURE)
+// ═══════════════════════════════════════════════════════════
+function loadTimetable() {
+  const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const today = days[new Date().getDay()];
+
+  const timetableData = {
+
+    Mon: ["9:30 – EOS","10:45 – RC","11:45 – IoT","1:30 – MOOC","2:30 – EOS Lab"],
+    Tue: ["9:30 – AML","10:45 – IoT","11:45 – EOS","1:30 – AML","2:30 – AML Lab"],
+    Wed: ["9:30 – RC","10:45 – EOS","11:45 – AML","1:30 – RC","2:30 – RC Lab"],
+    Thu: ["9:30 – IoT","10:45 – IoT","11:45 – EOS","1:30 – MOOC","2:30 – IoT Lab"],
+    Fri: ["9:30 – AML","10:45 – RC","11:45 – Audit","1:30 – MOOC","2:30 – MOOC / Audit"]
+
+  };
+
+  const list = document.getElementById("timetable");
+
+  if (!timetableData[today]) {
+    list.innerHTML = "<li>No classes today 🎉</li>";
+    return;
+  }
+
+  list.innerHTML =
+    `<li><strong>${today} Schedule</strong></li>` +
+    timetableData[today].map(item => `<li>${item}</li>`).join('');
+}
+
+loadTimetable();
+
+// ═══════════════════════════════════════════════════════════
 // CAROUSEL
 // ═══════════════════════════════════════════════════════════
 function buildSlides(items){
@@ -112,7 +143,7 @@ function buildSlides(items){
 }
 
 // ═══════════════════════════════════════════════════════════
-// FIREBASE (WITH FILTER)
+// FIREBASE
 // ═══════════════════════════════════════════════════════════
 db.ref('announcements').on('value', snap => {
   const data = snap.val();
@@ -120,7 +151,7 @@ db.ref('announcements').on('value', snap => {
   const items = data
     ? Object.entries(data)
         .map(([key,val]) => ({key,...val}))
-        .filter(item => item.target === "ALL" || item.target === DISPLAY_GROUP) // 🔥 FILTER
+        .filter(item => item.target === "ALL" || item.target === DISPLAY_GROUP)
         .sort((a,b)=>b.timestamp-a.timestamp)
     : [];
 
