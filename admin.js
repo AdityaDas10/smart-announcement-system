@@ -35,6 +35,7 @@ document.getElementById('ann-input').addEventListener('input', function () {
 function postAnnouncement() {
   const text   = document.getElementById('ann-input').value.trim();
   const author = document.getElementById('author-input').value.trim() || 'Admin';
+  const target = document.getElementById('target-select').value;
 
   if (!text) {
     showFeedback('Please enter an announcement.', 'error');
@@ -42,11 +43,12 @@ function postAnnouncement() {
   }
 
   const newRef = ref.push();
-  newRef.set({
-    text:      text,
-    author:    author,
-    timestamp: Date.now(),
-  }).then(() => {
+ newRef.set({
+  text:      text,
+  author:    author,
+  target:    target,   // 🔥 ADD THIS LINE
+  timestamp: Date.now(),
+}).then(() => {
     document.getElementById('ann-input').value   = '';
     document.getElementById('char-count').textContent = '0 / 300';
     showFeedback('✓ Announcement posted!', 'success');
