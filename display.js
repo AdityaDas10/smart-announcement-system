@@ -3,6 +3,7 @@
 // ── Firebase ──────────────────────────────────────────────
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+const DISPLAY_GROUP = "CSE"; // change per device
 let voiceEnabled = false;
 let lastUpdateTime = Date.now();
 
@@ -258,10 +259,11 @@ document.addEventListener('keydown', e => {
 db.ref('announcements').on('value', snap => {
   const data  = snap.val();
   const items = data
-    ? Object.entries(data)
-        .map(([key, val]) => ({ key, ...val }))
-        .sort((a, b) => b.timestamp - a.timestamp)
-    : [];
+  ? Object.entries(data)
+      .map(([key, val]) => ({ key, ...val }))
+      .filter(item => item.target === "ALL" || item.target === DISPLAY_GROUP) // ✅ ADD THIS LINE
+      .sort((a, b) => b.timestamp - a.timestamp)
+  : [];
 
   // Voice for new items
   if (!isFirstLoad) {
