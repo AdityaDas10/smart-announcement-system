@@ -2,7 +2,7 @@
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// ✅ Dynamic group (NO HARDCODING)
+// ✅ Dynamic group
 let DISPLAY_GROUP = localStorage.getItem("group") || "ALL";
 
 // ── Voice unlock ──────────────────────────────────────────
@@ -38,7 +38,6 @@ const OWM_API_KEY = "5b146a579bcabefe2bf82ca22d301fd3";
 const OWM_CITY    = "Kozhikode,IN";
 
 // ── Carousel state ────────────────────────────────────────
-let slides = [];
 let currentIndex = 0;
 let autoTimer = null;
 let knownKeys = new Set();
@@ -93,20 +92,18 @@ getWeather();
 setInterval(getWeather,600000);
 
 // ═══════════════════════════════════════════════════════════
-// 🔥 TIMETABLE (NEW FEATURE)
+// TIMETABLE
 // ═══════════════════════════════════════════════════════════
 function loadTimetable() {
   const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
   const today = days[new Date().getDay()];
 
   const timetableData = {
-
     Mon: ["9:30 – EOS","10:45 – RC","11:45 – IoT","1:30 – MOOC","2:30 – EOS Lab"],
     Tue: ["9:30 – AML","10:45 – IoT","11:45 – EOS","1:30 – AML","2:30 – AML Lab"],
     Wed: ["9:30 – RC","10:45 – EOS","11:45 – AML","1:30 – RC","2:30 – RC Lab"],
     Thu: ["9:30 – IoT","10:45 – IoT","11:45 – EOS","1:30 – MOOC","2:30 – IoT Lab"],
     Fri: ["9:30 – AML","10:45 – RC","11:45 – Audit","1:30 – MOOC","2:30 – MOOC / Audit"]
-
   };
 
   const list = document.getElementById("timetable");
@@ -142,19 +139,47 @@ function buildSlides(items){
   `).join('');
 }
 
+// 🔥 SLIDER LOGIC
+function showSlide(index) {
+  const track = document.getElementById('carousel-track');
+  const slides = document.querySelectorAll('.carousel-slide');
+
+  if (slides.length === 0) return;
+
+  index = (index + slides.length) % slides.length;
+  currentIndex = index;
+
+  track.style.transform = `translateX(-${index * 100}%)`;
+}
+
+function startAutoSlide() {
+  clearInterval(autoTimer);
+  autoTimer = setInterval(() => {
+    showSlide(currentIndex + 1);
+  }, AUTO_DELAY);
+}
+
+function nextSlide() {
+  showSlide(currentIndex + 1);
+}
+
+function prevSlide() {
+  showSlide(currentIndex - 1);
+}
+
 // ═══════════════════════════════════════════════════════════
 // FIREBASE
 // ═══════════════════════════════════════════════════════════
 db.ref('announcements').on('value', snap => {
   const data = snap.val();
 
-const items = data
-  ? Object.entries(data)
-      .map(([key,val]) => ({key,...val}))
-      .filter(item => (item.target || "ALL") === "ALL" || item.target === DISPLAY_GROUP)
-      .sort((a,b)=>b.timestamp-a.timestamp)
-      .slice(0, 5) // ✅ LIMIT TO LAST 5
-  : [];
+  const items = data
+    ? Object.entries(data)
+        .map(([key,val]) => ({key,...val}))
+        .filter(item => (item.target || "ALL") === "ALL" || item.target === DISPLAY_GROUP)
+        .sort((a,b)=>b.timestamp-a.timestamp)
+        .slice(0,5)
+    : [];
 
   if (!isFirstLoad) {
     items.forEach(item => {
@@ -171,6 +196,13 @@ const items = data
   items.forEach(item => knownKeys.add(item.key));
 
   buildSlides(items);
+
+  // 🔥 IMPORTANT FIX
+  showSlide(0);
+  startAutoSlide();
+
+  document.getElementById("announce-count").innerText = items.length;
+
   isFirstLoad = false;
 });
 
