@@ -117,7 +117,6 @@ function loadTimetable() {
     `<li><strong>${today} Schedule</strong></li>` +
     timetableData[today].map(item => `<li>${item}</li>`).join('');
 }
-
 loadTimetable();
 
 // ═══════════════════════════════════════════════════════════
@@ -159,13 +158,8 @@ function startAutoSlide() {
   }, AUTO_DELAY);
 }
 
-function nextSlide() {
-  showSlide(currentIndex + 1);
-}
-
-function prevSlide() {
-  showSlide(currentIndex - 1);
-}
+function nextSlide() { showSlide(currentIndex + 1); }
+function prevSlide() { showSlide(currentIndex - 1); }
 
 // ═══════════════════════════════════════════════════════════
 // FIREBASE
@@ -196,8 +190,6 @@ db.ref('announcements').on('value', snap => {
   items.forEach(item => knownKeys.add(item.key));
 
   buildSlides(items);
-
-  // 🔥 IMPORTANT FIX
   showSlide(0);
   startAutoSlide();
 
@@ -226,7 +218,7 @@ function speakAnnouncement(text){
 }
 
 // ═══════════════════════════════════════════════════════════
-// SENSORS
+// SENSORS + ALERT
 // ═══════════════════════════════════════════════════════════
 async function fetchSensorData(){
   try{
@@ -234,11 +226,70 @@ async function fetchSensorData(){
     const data=await res.json();
     const f=data.feeds[0];
 
-    document.getElementById('temp').innerText=f.field1||'--';
-    document.getElementById('hum').innerText=f.field2||'--';
-    document.getElementById('air').innerText=f.field3||'--';
+    const temp = f.field1 || '--';
+    const hum  = f.field2 || '--';
+    const air  = parseInt(f.field3 || 0);
+
+    document.getElementById('temp').innerText = temp;
+    document.getElementById('hum').innerText  = hum;
+    document.getElementById('air').innerText  = air;
+
+    // 🔥 ALERT LOGIC
+    const alertBox = document.getElementById("alertBox");
+
+    if (air > 400) {
+      alertBox.innerText = "🚨 Hazardous Air Quality!";
+      alertBox.classList.remove("hidden");
+    } else if (air > 250) {
+      alertBox.innerText = "⚠️ Air Quality Poor! Stay indoors";
+      alertBox.classList.remove("hidden");
+    } else {
+      alertBox.classList.add("hidden");
+    }
 
   }catch(e){console.log(e);}
 }
 fetchSensorData();
 setInterval(fetchSensorData,15000);
+
+// ═══════════════════════════════════════════════════════════
+// 🔥 PARTICLE BACKGROUND
+// ═══════════════════════════════════════════════════════════
+const canvas = document.getElementById("particles");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+
+for (let i = 0; i < 80; i++) {
+  particles.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 2,
+    dx: (Math.random() - 0.5) * 0.5,
+    dy: (Math.random() - 0.5) * 0.5
+  });
+}
+
+function animateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  particles.forEach(p => {
+    p.x += p.dx;
+    p.y += p.dy;
+
+    if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+    if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = "#00eaff";
+    ctx.fill();
+  });
+
+  requestAnimationFrame(animateParticles);
+}
+
+animateParticles();
