@@ -148,12 +148,13 @@ function buildSlides(items){
 db.ref('announcements').on('value', snap => {
   const data = snap.val();
 
-  const items = data
-    ? Object.entries(data)
-        .map(([key,val]) => ({key,...val}))
-        .filter(item => item.target === "ALL" || item.target === DISPLAY_GROUP)
-        .sort((a,b)=>b.timestamp-a.timestamp)
-    : [];
+const items = data
+  ? Object.entries(data)
+      .map(([key,val]) => ({key,...val}))
+      .filter(item => (item.target || "ALL") === "ALL" || item.target === DISPLAY_GROUP)
+      .sort((a,b)=>b.timestamp-a.timestamp)
+      .slice(0, 5) // ✅ LIMIT TO LAST 5
+  : [];
 
   if (!isFirstLoad) {
     items.forEach(item => {
